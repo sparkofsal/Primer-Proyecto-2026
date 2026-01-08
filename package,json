@@ -1,0 +1,12 @@
+{
+  "name": "primer-proyecto-2026",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix Backend\" \"npm run dev --prefix webapp\"",
+    "start": "concurrently \"npm run start --prefix Backend\" \"npm run dev --prefix webapp\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

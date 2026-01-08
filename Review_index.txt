@@ -1,0 +1,4 @@
+C:\Users\Armando\Primer Proyecto 2026\Backend\server.js
+C:\Users\Armando\Primer Proyecto 2026\Backend\routes
+C:\Users\Armando\Primer Proyecto 2026\Backend\controllers
+C:\Users\Armando\Primer Proyecto 2026\webapp\src

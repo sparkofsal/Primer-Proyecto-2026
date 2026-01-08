@@ -1,35 +1,63 @@
 // middleware/auth.js
-const jwt = require('jsonwebtoken'); //con esta linea importo el paquete jsonwebtoken para manejar tokens JWT
+const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/jwt');
 
+/**
+ * AUTH MIDDLEWARE
+ * ✅ Verifica JWT enviado como: Authorization: Bearer <token>
+ *
+ * NOTAS (para mi yo del futuro):
+ * - Este middleware protege rutas privadas (users, orders, admin, etc.)
+ * - Inyecta el usuario decodificado en req.usuario
+ *
+ * TODO (si el proyecto crece):
+ * - Implementar refresh tokens
+ * - Cambiar a cookies httpOnly para mayor seguridad
+ */
 function verificarToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) { //esta linea me sirve para verificar si el encabezado de autorizacion esta presente
-    return res
-      .status(401)
-      .json({ mensaje: 'No se proporcionó el token de autorización' });
+  // 1️⃣ Verificar que venga el header Authorization
+  if (!authHeader) {
+    return res.status(401).json({
+      mensaje: 'No se proporcionó el token de autorización',
+    });
   }
 
-  // Este lo he utilizado para extraer el token del encabezado "Bearer <token>"
+  // 2️⃣ Esperamos formato: Bearer <token>
   const [tipo, token] = authHeader.split(' ');
 
-  if (tipo !== 'Bearer' || !token) { //el bearer me sirve para verificar que el formato del token sea correcto, se usa para seguiridad y autenticacion
-    return res
-      .status(401)
-      .json({ mensaje: 'Formato de token inválido. Use: Bearer <token>' });
+  if (tipo !== 'Bearer' || !token) {
+    return res.status(401).json({
+      mensaje: 'Formato de token inválido. Use: Bearer <token>',
+    });
   }
 
   try {
+    // 3️⃣ Verificar token
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Guardamos los datos del usuario en la request para usarlos en las rutas protegidas
+    /**
+     * decoded contiene:
+     * {
+     *   id,
+     *   email,
+     *   rol,
+     *   iat,
+     *   exp
+     * }
+     *
+     * NOTA:
+     * - Guardamos esto en req.usuario para usarlo en controllers
+     */
     req.usuario = decoded;
 
     next();
   } catch (error) {
     console.error('Error al verificar token:', error.message);
-    return res.status(401).json({ mensaje: 'Token inválido o expirado' });
+    return res.status(401).json({
+      mensaje: 'Token inválido o expirado',
+    });
   }
 }
 

@@ -28,7 +28,7 @@ export const APP_CONFIG = {
   // ✅ Flags para activar/desactivar módulos (white-label)
   features: {
     users: true,
-    roomserviceOrders: true,
+    roomserviceOrders: false, // NOTA: lo apago porque el backend aún NO tiene /api/orders
     // Ejemplos para futuro:
     inventory: false,
     reservations: false,
