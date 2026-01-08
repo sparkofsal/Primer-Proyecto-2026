@@ -1,0 +1,61 @@
+
+# este gitignore lo uso para Node.js & Express backend para evitar subir node_modules pesados y otros archivos innecesarios al repositorio, como caches, logs y archivos de configuracion sensibles, etc#
+#Tambien me sirve para proyectos con React (no el native), Angular o Vue en el frontend, APIs REST, Docker, etc.#
+
+
+# Dependencias
+node_modules/
+
+# Archivos de logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Directorios de pruebas o cobertura
+coverage/
+.nyc_output/
+
+# Cache de herramientas
+.cache/
+.eslintcache
+.stylelintcache
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Builds o distribuciones
+dist/
+build/
+tmp/
+temp/
+
+# Archivos de VSCode
+.vscode/
+.history/
+
+# Archivos de procesos / PM2
+pids/
+*.pid
+*.seed
+
+# Archivos de IDEs
+.idea/
+*.swp
+
+# Docker
+docker-data/
+docker-compose.override.yml
+
+# Otros
+*.pem
+*.crt
+*.key
