@@ -1,6 +1,7 @@
 {
   "name": "backend-node",
   "version": "1.0.0",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +11,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
@@ -19,6 +19,10 @@
     "mysql2": "^3.16.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "nodemon": "^3.1.11"
+=======
+    "nodemon": "^3.0.2"
+>>>>>>> avance4-xampp
   }
 }
