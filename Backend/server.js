@@ -88,6 +88,7 @@ const ejemploRoutes = require("./routes/ejemplo.routes");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const adminRoutes = require("./routes/admin.routes");
+const orderRoutes = require("./routes/order.routes"); // ✅ NUEVO: Orders (core vendible)
 
 // ✅ Health check (para deploy/monitoreo)
 /**
@@ -119,6 +120,7 @@ app.use("/api/ejemplos", ejemploRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/orders", orderRoutes); // ✅ NUEVO: módulo de órdenes
 
 // ==========================
 // 5) NOT FOUND + ERROR HANDLER

@@ -1,6 +1,19 @@
 // src/features/roomservice/OrdersPage.jsx
 import { useEffect, useState } from "react";
-import { roomserviceService } from "./roomserviceService";
+import { ordersService } from "./ordersService";
+
+/**
+ * ORDERS PAGE (GENÉRICA)
+ *
+ * NOTAS IMPORTANTES:
+ * - Esta vista NO asume que siempre es roomservice
+ * - Los campos visibles se adaptan por nicho
+ *
+ * PARA OTROS NICHOS:
+ * - Hotel  -> mostrar roomNumber
+ * - Restaurante -> mostrar tableNumber
+ * - Soporte -> mostrar ticketId
+ */
 
 export default function OrdersPage() {
   const [items, setItems] = useState([]);
@@ -10,11 +23,16 @@ export default function OrdersPage() {
   const load = async () => {
     setBusy(true);
     setError("");
+
     try {
-      const data = await roomserviceService.listOrders();
-      setItems(Array.isArray(data) ? data : data.items || []);
+      const orders = await ordersService.list();
+      setItems(orders);
     } catch (err) {
-      setError(err?.response?.data?.message || "No pude cargar órdenes. Revisa endpoint /orders.");
+      setError(
+        err?.response?.data?.mensaje ||
+        err?.response?.data?.message ||
+        "No pude cargar órdenes. Revisa /api/orders."
+      );
     } finally {
       setBusy(false);
     }
@@ -28,7 +46,11 @@ export default function OrdersPage() {
     <div style={{ display: "grid", gap: 12 }}>
       <h2 style={{ margin: 0 }}>Órdenes</h2>
 
-      {error ? <div style={{ background: "#ffe5e5", padding: 10, borderRadius: 10 }}>{error}</div> : null}
+      {error ? (
+        <div style={{ background: "#ffe5e5", padding: 10, borderRadius: 10 }}>
+          {error}
+        </div>
+      ) : null}
 
       <div style={{ border: "1px solid #eee", borderRadius: 14, padding: 12 }}>
         {busy ? (
@@ -38,19 +60,31 @@ export default function OrdersPage() {
             <thead>
               <tr style={{ textAlign: "left" }}>
                 <th>ID</th>
-                <th>Habitación</th>
+                <th>Título</th>
                 <th>Status</th>
                 <th>Creada</th>
               </tr>
             </thead>
             <tbody>
               {items.map((o) => (
-                <tr key={o.id || o._id}>
-                  <td>{o.id || o._id || "—"}</td>
-                  {/* TODO: si en otro nicho NO hay habitación, cambia el header y campo */}
-                  <td>{o.roomNumber || o.room || "—"}</td>
-                  <td>{o.status || "—"}</td>
-                  <td>{o.createdAt ? new Date(o.createdAt).toLocaleString() : "—"}</td>
+                <tr key={o.id}>
+                  <td>{o.id}</td>
+
+                  {/* 
+                    NOTA:
+                    - Para roomservice: title = "Sandwich / Burger"
+                    - Para restaurante: title = "Orden mesa 4"
+                    - Para soporte: title = "Ticket impresora"
+                  */}
+                  <td>{o.title || "—"}</td>
+
+                  <td>{o.status || "pending"}</td>
+
+                  <td>
+                    {o.created_at
+                      ? new Date(o.created_at).toLocaleString()
+                      : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -58,9 +92,11 @@ export default function OrdersPage() {
         )}
       </div>
 
-      {/* TODO (función diferencial):
-          - Botones para cambiar status: Pending -> Preparing -> Delivered
-          - Notificaciones en tiempo real (más adelante con WebSocket)
+      {/* 
+        IDEAS DIFERENCIALES (para vender):
+        - Cambiar status desde aquí (admin/staff)
+        - Filtros por status
+        - Vista por rol
       */}
     </div>
   );

@@ -5,6 +5,20 @@ import { authService } from "./authService";
 import { authStore } from "./authStore";
 import { APP_CONFIG } from "../../config/appConfig";
 
+/**
+ * LOGIN PAGE (PRO)
+ *
+ * Flujo:
+ * 1) Login -> token
+ * 2) Guardar token (para que apiClient lo mande)
+ * 3) /me -> usuario real
+ * 4) Guardar user
+ * 5) Navigate dashboard
+ *
+ * NOTA:
+ * - Esto es vendible porque ya soporta roles con "user.rol"
+ */
+
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -19,18 +33,24 @@ export default function LoginPage() {
     setBusy(true);
 
     try {
-      const data = await authService.login({ email, password });
+      // 1) login: obtengo token
+      const { token } = await authService.login({ email, password });
 
-      // ✅ NOTA: si tu backend devuelve otras keys, cámbialo aquí.
-      authStore.setSession({
-        token: data.token,
-        user: data.user,
-      });
+      // 2) guardo token primero (importante)
+      authStore.setSession({ token, user: null });
 
+      // 3) obtengo usuario real
+      const user = await authService.me();
+
+      // 4) guardo user
+      authStore.setSession({ token, user });
+
+      // 5) entro al dashboard
       navigate(APP_CONFIG.routing.afterLogin, { replace: true });
     } catch (err) {
-      // ✅ Mensaje “humano”
+      // NOTA: tu backend usa "mensaje", no "message"
       const msg =
+        err?.response?.data?.mensaje ||
         err?.response?.data?.message ||
         "No pude iniciar sesión. Revisa tus credenciales o tu servidor.";
       setError(msg);

@@ -2,9 +2,13 @@
 import { storage } from "../../utils/storage";
 
 /**
- * Store MUY simple (sin Redux).
- * ✅ Mantiene token + user en memoria y storage.
- * TODO: Si crece mucho, migras a Zustand/Redux sin romper el resto.
+ * AUTH STORE (simple y profesional)
+ *
+ * ✅ Guarda token + user en localStorage.
+ * ✅ Permite que la sesión sobreviva si cierro/abro el navegador.
+ *
+ * NOTA (para mi yo del futuro):
+ * - Si luego cambio a cookies httpOnly, aquí dejo de guardar token.
  */
 
 export const authStore = {
@@ -14,10 +18,15 @@ export const authStore = {
       user: storage.getUser(),
     };
   },
+
   setSession({ token, user }) {
-    storage.setToken(token);
-    storage.setUser(user);
+    // NOTA: guardamos token siempre que exista
+    if (token) storage.setToken(token);
+
+    // NOTA: user puede ser null en algunos pasos (ej: antes de /me)
+    if (user) storage.setUser(user);
   },
+
   clearSession() {
     storage.clearAll();
   },

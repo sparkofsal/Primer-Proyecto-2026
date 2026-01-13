@@ -2,17 +2,23 @@
 import { apiClient } from "../../services/apiClient";
 
 /**
- * TODO: Ajusta endpoints a tu backend real:
- * - GET /users
- * - POST /users
- * - PUT /users/:id
- * - DELETE /users/:id (o desactivar)
+ * USERS SERVICE (Frontend)
+ *
+ * NOTAS:
+ * - Backend: GET /api/users -> { items: [...] }
+ * - Backend: POST /api/users -> crea usuario (solo admin)
+ *
+ * TODO (vendible):
+ * - Agregar updateUser
+ * - Agregar deactivateUser
  */
+
 export const usersService = {
   async list() {
     const { data } = await apiClient.get("/users");
-    return data;
+    return data.items; // ✅ ya viene como { items }
   },
+
   async create(payload) {
     const { data } = await apiClient.post("/users", payload);
     return data;

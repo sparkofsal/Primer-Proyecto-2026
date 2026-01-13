@@ -1,16 +1,31 @@
 // routes/user.routes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const verificarToken = require('../middleware/auth');
-const { obtenerMiPerfil } = require('../controllers/user.controller');
+const verificarToken = require("../middleware/auth");
+const requireRole = require("../middleware/requireRole");
 
-// Ruta de prueba (puedes borrarla luego)
-router.get('/ping', (req, res) => {
-  res.json({ ok: true });
-});
+const {
+  listarUsuarios,
+  crearUsuarioAdmin,
+} = require("../controllers/user.controller");
 
-// Perfil del usuario autenticado
-router.get('/me', verificarToken, obtenerMiPerfil);
+/**
+ * USERS ROUTES (PRO)
+ *
+ * NOTAS:
+ * - Todas estas rutas requieren token (verificarToken)
+ * - Además requieren rol admin (requireRole("admin"))
+ *
+ * TODO (si vendo y escalo):
+ * - Staff podría listar usuarios sin ver datos sensibles
+ * - Cliente solo debería ver su propio perfil
+ */
+
+// GET /api/users  -> listar usuarios (solo admin)
+router.get("/", verificarToken, requireRole("admin"), listarUsuarios);
+
+// POST /api/users -> crear usuario (solo admin)
+router.post("/", verificarToken, requireRole("admin"), crearUsuarioAdmin);
 
 module.exports = router;

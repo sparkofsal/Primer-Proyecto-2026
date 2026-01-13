@@ -4,9 +4,17 @@ import { APP_CONFIG } from "../config/appConfig";
 import { storage } from "../utils/storage";
 
 /**
- * Axios instance centralizada.
- * ✅ Aquí se maneja: baseURL, prefijo, token, errores comunes.
- * TODO: Si tu backend usa refresh tokens, este será el lugar para interceptores más avanzados.
+ * API CLIENT (PRO)
+ *
+ * ✅ Centraliza configuración de Axios:
+ * - baseURL (backend)
+ * - prefix (/api)
+ * - token automático en Authorization
+ * - manejo básico de 401 (sesión expirada)
+ *
+ * NOTA (para mi yo del futuro):
+ * - Si cambio a /api/v1, solo cambio APP_CONFIG o .env
+ * - Si cambio a cookies httpOnly, aquí se ajusta la auth
  */
 
 const baseURL = `${APP_CONFIG.api.baseURL}${APP_CONFIG.api.prefix}`;
@@ -16,25 +24,29 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
+// ✅ Interceptor: antes de cada request, agregar token si existe
 apiClient.interceptors.request.use((config) => {
   const token = storage.getToken();
 
-  // ✅ NOTA: Ajusta el header si tu backend usa otro esquema (ej. "Token xxx")
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  // NOTA: backend espera "Bearer <token>"
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   return config;
 });
 
+// ✅ Interceptor: si el token falla, limpiamos sesión
 apiClient.interceptors.response.use(
   (resp) => resp,
   (err) => {
-    // ✅ Manejo simple de expiración / inválido
     const status = err?.response?.status;
 
-    // NOTA: Ajusta este status según tu backend (401 típico)
+    // NOTA: 401 = no autorizado (token inválido/expirado)
     if (status === 401) {
       storage.clearAll();
-      // TIP: Evita loops: solo redirige si no estás ya en /login
+
+      // NOTA: Evitamos loop si ya estamos en login
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
